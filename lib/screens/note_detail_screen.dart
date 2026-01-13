@@ -23,13 +23,24 @@ class NoteDetailScreen extends StatelessWidget {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              note.delete();
-              Navigator.pop(context); // Close dialog
-              Navigator.pop(context); // Return to home
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Note deleted')),
-              );
+            onPressed: () async {
+              try {
+                if (note.isInBox) {
+                  await note.delete();
+                }
+                if (!context.mounted) return;
+                Navigator.pop(context); // Close dialog
+                Navigator.pop(context); // Return to home
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Note deleted')),
+                );
+              } catch (e) {
+                if (!context.mounted) return;
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Error deleting note: $e')),
+                );
+              }
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Delete'),

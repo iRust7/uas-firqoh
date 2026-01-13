@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../data/hive_boxes.dart';
 import '../models/note.dart';
+import '../utils/note_filter.dart';
 import '../widgets/note_card.dart';
 import 'note_detail_screen.dart';
 import 'note_form_screen.dart';
@@ -15,6 +17,30 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool _isGridMode = false;
+  NoteFilter _currentFilter = NoteFilter.pinned;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
+
+  Future<void> _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _currentFilter = NoteFilterExtension.fromValue(
+        prefs.getString('noteFilter') ?? 'pinned',
+      );
+    });
+  }
+
+  Future<void> _saveFilter(NoteFilter filter) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('noteFilter', filter.value);
+    setState(() {
+      _currentFilter = filter;
+    });
+  }
 
   void _toggleViewMode() {
     setState(() {
@@ -24,13 +50,67 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Note> _getSortedNotes(Box<Note> box) {
     final notes = box.values.toList();
-    // Sort: pinned first, then by updated date (newest first)
-    notes.sort((a, b) {
-      if (a.isPinned && !b.isPinned) return -1;
-      if (!a.isPinned && b.isPinned) return 1;
-      return b.updatedAt.compareTo(a.updatedAt);
-    });
+    
+    switch (_currentFilter) {
+      case NoteFilter.pinned:
+        // Pinned first, then by updated date (newest first)
+        notes.sort((a, b) {
+          if (a.isPinned && !b.isPinned) return -1;
+          if (!a.isPinned && b.isPinned) return 1;
+          return b.updatedAt.compareTo(a.updatedAt);
+        });
+        break;
+      
+      case NoteFilter.alphabetical:
+        // A-Z by title
+        notes.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+        break;
+      
+      case NoteFilter.newestFirst:
+        // Recently updated first
+        notes.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+        break;
+      
+      case NoteFilter.oldestFirst:
+        // Oldest updated first
+        notes.sort((a, b) => a.updatedAt.compareTo(b.updatedAt));
+        break;
+    }
+    
     return notes;
+  }
+
+  void _showFilterMenu() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(
+              'Sort Notes',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          ...NoteFilter.values.map((filter) => ListTile(
+            leading: Icon(
+              _currentFilter == filter ? Icons.check : Icons.sort,
+              color: _currentFilter == filter ? Theme.of(context).primaryColor : null,
+            ),
+            title: Text(filter.displayName),
+            onTap: () {
+              _saveFilter(filter);
+              Navigator.pop(context);
+            },
+          )),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
   }
 
   @override
@@ -38,12 +118,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: Column(
         children: [
-          // Toggle button at top
+          // Filter and toggle buttons at top
           Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                // Filter button
+                OutlinedButton.icon(
+                  icon: const Icon(Icons.filter_list),
+                  label: Text(_currentFilter.displayName),
+                  onPressed: _showFilterMenu,
+                ),
+                // View mode toggle
                 IconButton(
                   icon: Icon(_isGridMode ? Icons.view_list : Icons.grid_view),
                   onPressed: _toggleViewMode,

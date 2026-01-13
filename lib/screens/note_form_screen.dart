@@ -63,16 +63,16 @@ class _NoteFormScreenState extends State<NoteFormScreen> {
     final content = _contentController.text.trim();
 
     if (isEditMode) {
-      final updatedNote = widget.note!.copyWith(
-        title: title,
-        content: content,
-        tag: tag,
-        isPinned: _isPinned,
-        colorIndex: _selectedColorIndex,
-      );
-      // Update timestamp manually
-      updatedNote.updatedAt = DateTime.now().millisecondsSinceEpoch;
-      await updatedNote.save();
+      // Update existing note properties in-place
+      widget.note!.title = title;
+      widget.note!.content = content;
+      widget.note!.tag = tag;
+      widget.note!.isPinned = _isPinned;
+      widget.note!.colorIndex = _selectedColorIndex;
+      widget.note!.updatedAt = DateTime.now().millisecondsSinceEpoch;
+      
+      // Save the updated note
+      await widget.note!.save();
     } else {
       final newNote = Note.create(
         title: title,
