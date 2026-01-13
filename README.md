@@ -1,135 +1,163 @@
-# StudyNotes
+# StudyNotes - Aplikasi Catatan Belajar
 
-A Flutter-based note-taking app designed for students and learners. Built with offline-first architecture using Hive for local data persistence.
+Aplikasi mobile berbasis Flutter untuk membantu mencatat materi belajar dengan sistem offline-first menggunakan database lokal Hive.
 
-## What It Does
+## Tentang Aplikasi
 
-StudyNotes helps you organize your study materials with features like color categorization, pinning important notes, and multi-user support. Everything is stored locally on your device, so you can access your notes without an internet connection.
+StudyNotes dirancang untuk memudahkan mahasiswa dan pelajar dalam mengorganisir catatan belajar. Semua data tersimpan di perangkat, sehingga bisa diakses kapan saja tanpa koneksi internet.
 
-## Key Features
+Aplikasi ini dilengkapi dengan fitur kategorisasi warna, pin catatan penting, sistem multi-user, dan berbagai tools tambahan yang memudahkan proses belajar.
 
-**Core Functionality**
-- Create, edit, and delete notes with rich text content
-- Organize notes by tags and categories
-- Pin important notes to keep them at the top
-- Choose from 8 color themes for visual organization
-- Switch between list and grid view layouts
+## Fitur Utama
 
-**User Management**
-- Multi-user authentication system
-- Secure local login with session management
-- Profile customization per user
+### Manajemen Catatan
+- Buat, edit, dan hapus catatan dengan mudah
+- Atur catatan berdasarkan tag dan kategori
+- Pin catatan penting agar selalu muncul di atas
+- Pilih dari 8 tema warna untuk kategorisasi visual
+- Tampilan list atau grid sesuai preferensi
 
-**Additional Tools**
-- Calendar view to see notes by date
-- Real-time search across all notes
-- Share notes to WhatsApp, Email, or other apps
-- Copy note content to clipboard
-- Lottie animations for enhanced UX
+### Sistem Filter & Pencarian
+- Filter berdasarkan abjad (A-Z)
+- Urutkan berdasarkan waktu terbaru atau terlama
+- Tampilkan catatan yang di-pin terlebih dahulu
+- Pencarian real-time di semua catatan
+- Lihat catatan berdasarkan tanggal di kalender
 
-## Tech Stack
+### Multi-User
+- Sistem registrasi dan login lokal
+- Setiap user punya data terpisah
+- Profil custom per pengguna
+- Logout aman dengan session management
+
+### Tools Tambahan
+- Share catatan ke WhatsApp, Email, atau aplikasi lain
+- Copy konten ke clipboard
+- Animasi Lottie untuk UX yang lebih menarik
+- Bottom navigation untuk akses cepat
+
+## Teknologi yang Digunakan
 
 - **Framework**: Flutter 3.x
-- **Local Database**: Hive (NoSQL)
-- **Session Management**: SharedPreferences
-- **Animations**: Lottie
-- **Calendar**: table_calendar package
-- **Sharing**: share_plus package
+- **Database Lokal**: Hive (NoSQL)
+- **State Management**: StatefulWidget
+- **Session**: SharedPreferences
+- **Animasi**: Lottie
+- **Kalender**: table_calendar
+- **Share**: share_plus
 
-## Project Structure
+## Struktur Project
 
 ```
 lib/
-├── models/          # Data models (Note, User)
-├── screens/         # UI screens
-├── services/        # Business logic (SessionService)
-├── widgets/         # Reusable components
-├── utils/           # Helper functions (NoteColors)
-├── data/            # Hive box initialization
-└── animation/       # Lottie JSON files
+├── models/          # Model data (Note, User)
+├── screens/         # Halaman UI
+├── services/        # Logic bisnis (SessionService)
+├── widgets/         # Komponen reusable
+├── utils/           # Helper & utilities
+├── data/            # Inisialisasi Hive
+└── animation/       # File Lottie JSON
 ```
 
-## Setup & Installation
+## Cara Instalasi
 
-**Prerequisites**
-- Flutter SDK (3.0.0 or higher)
+### Prasyarat
+- Flutter SDK (versi 3.0.0 ke atas)
 - Android SDK / Xcode
 - Git
 
-**Clone & Run**
+### Langkah Setup
 ```bash
-git clone <repository-url>
+git clone <url-repository>
 cd studynotes
 flutter pub get
 flutter run
 ```
 
-**Build APK**
+### Build APK Release
 ```bash
 flutter build apk --release
 ```
 
-The APK will be available at: `build/app/outputs/flutter-apk/app-release.apk`
+File APK akan tersimpan di: `build/app/outputs/flutter-apk/app-release.apk`
 
-## How to Use
+## Cara Penggunaan
 
-1. **First Launch**: Create an account with username, email, and password
-2. **Add Notes**: Tap the floating action button (+) on the home screen
-3. **Organize**: 
-   - Assign colors to categorize notes
-   - Add tags for filtering
-   - Pin important notes
-4. **Find Notes**: Use the search tab or calendar view
-5. **Share**: Open any note and use the share or copy buttons
+### Pertama Kali
+1. Buka aplikasi dan buat akun baru
+2. Isi username, email, dan password
+3. Login dengan akun yang sudah dibuat
 
-## Data Storage
+### Membuat Catatan
+1. Tekan tombol (+) di home screen
+2. Isi judul, tag, dan konten catatan
+3. Pilih warna kategori (opsional)
+4. Centang "Pin Note" jika penting
+5. Tap "Save" untuk menyimpan
 
-All data is stored locally using Hive:
-- Notes are saved in `notesBox`
-- User accounts in `usersBox`
-- Session state in SharedPreferences
+### Mengatur Tampilan
+- Tap icon grid/list di kanan atas untuk ganti mode tampilan
+- Tap tombol filter untuk mengubah urutan catatan
+- Gunakan tab Search untuk mencari catatan tertentu
+- Buka tab Calendar untuk lihat berdasarkan tanggal
 
-**Note**: Uninstalling the app will delete all stored data. Consider exporting important notes before uninstalling.
+### Share & Copy
+1. Buka catatan yang ingin dibagikan
+2. Tap tombol "Share" untuk kirim ke aplikasi lain
+3. Atau tap "Copy" untuk salin ke clipboard
 
-## Development Notes
+## Penyimpanan Data
 
-**Code Generation**
+Semua data disimpan secara lokal menggunakan Hive:
+- Box `notesBox` untuk menyimpan catatan
+- Box `usersBox` untuk data akun
+- SharedPreferences untuk session dan preferensi
 
-The app uses Hive's code generation for type adapters. After modifying model classes:
+⚠️ **Penting**: Uninstall aplikasi akan menghapus semua data. Pastikan export catatan penting sebelum uninstall.
+
+## Development
+
+### Code Generation
+
+Setelah mengubah model class yang menggunakan Hive:
 
 ```bash
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
-**Hot Reload vs Hot Restart**
+### Hot Reload vs Hot Restart
 
-- Use `r` in terminal for hot reload (UI changes)
-- Use `R` for hot restart (state changes, new assets)
+- Gunakan `r` untuk hot reload (perubahan UI)
+- Gunakan `R` untuk hot restart (perubahan state/asset baru)
 
-## Known Limitations
+## Keterbatasan
 
-- No cloud sync (all data is local only)
-- No note attachments (text only)
-- Single device usage
-- No password recovery (local auth)
+Berikut beberapa batasan yang perlu diketahui:
+- Tidak ada sinkronisasi cloud (data lokal only)
+- Belum support attachment file/gambar
+- Hanya untuk satu perangkat
+- Tidak ada fitur password recovery
 
-## Future Enhancements
+## Pengembangan Selanjutnya
 
-Potential features for future versions:
-- Cloud backup/sync
-- Markdown support
-- Note attachments (images, files)
-- Export to PDF
+Rencana fitur untuk versi mendatang:
+- Cloud backup dan sinkronisasi
+- Support Markdown formatting
+- Attachment gambar dan file
+- Export catatan ke PDF
 - Dark mode theme
+- Reminder dengan push notification
 
-## License
+## Lisensi
 
-This project is created for educational purposes as part of a university mobile programming course.
+Project ini dibuat untuk keperluan akademis sebagai tugas mata kuliah Pemrograman Mobile.
 
-## Contact
+## Kontak
 
-For questions or issues, please open an issue in the repository.
+Untuk pertanyaan atau saran, silakan buka issue di repository ini.
 
 ---
 
-**Built with Flutter** • **Offline-First** • **Multi-User Support**
+**Dibuat dengan Flutter** • **Database Lokal Hive** • **Multi-User Support**
+
+*Aplikasi UAS - Pemrograman Mobile 2026*
